@@ -1,0 +1,210 @@
+====================================================
+=               ENDPOINTS Y JSONs TESTEO           =
+=               FERRETERIA HOGAR API               =
+====================================================
+
+----------------------------------------------------
+--------------   INVENTORY (INVENTARIOS)   ---------
+----------------------------------------------------
+
+[GET] /inventory
+Descripción: Listar todos los inventarios
+
+[GET] /inventory/{code}
+Descripción: Obtener un inventario por código
+
+[GET] /inventory/{inventoryCode}/full
+Descripción: Obtener inventario completo (productos + totales)
+Ejemplo:
+GET /inventory/INV001/full
+
+
+[POST] /inventory
+JSON de prueba:
+{
+  "code": "INV001",
+  "name": "Inventario Central",
+  "status": "ACTIVE",
+  "user": {
+    "username": "juan"
+  }
+}
+
+
+[PUT] /inventory
+JSON de prueba:
+{
+  "code": "INV001",
+  "name": "Inventario Central Actualizado",
+  "status": "ACTIVE",
+  "user": {
+    "username": "juan"
+  }
+}
+
+
+[DELETE] /inventory/{code}
+Ejemplo:
+DELETE /inventory/INV001
+
+
+----------------------------------------------------
+------------------   PRODUCTOS   -------------------
+----------------------------------------------------
+
+[GET] /api/products
+Descripción: Listar productos
+
+
+[GET] /api/products/{code}
+Ejemplo:
+GET /api/products/P001
+
+
+[POST] /api/products
+JSON:
+{
+  "code": "P001",
+  "name": "Martillo",
+  "description": "Martillo de acero"
+}
+
+Otro ejemplo:
+{
+  "code": "P002",
+  "name": "Destornillador Philips",
+  "description": "Phillips punta cruz"
+}
+
+
+[PUT] /api/products
+JSON:
+{
+  "code": "P001",
+  "name": "Martillo 500g"
+}
+
+
+[DELETE] /api/products/{code}
+Ejemplo:
+DELETE /api/products/P001
+
+
+
+----------------------------------------------------
+-----------   INVENTORY-PRODUCT (TABLA INTERMEDIA) -
+----------------------------------------------------
+
+[GET] /api/inventory-product/inventory/{inventoryCode}
+Descripción: Obtener todos los productos del inventario
+
+Ejemplo:
+GET /api/inventory-product/inventory/INV001
+
+
+[GET] /api/inventory-product/{inventoryCode}/{productCode}
+Ejemplo:
+GET /api/inventory-product/INV001/P001
+
+
+
+--------------- CREAR O SUMAR STOCK (POST NORMAL) ---------------
+
+[POST] /api/inventory-product
+Descripción: Crea o suma stock enviando el JSON completo
+
+JSON:
+{
+  "id": {
+    "inventoryCode": "INV001",
+    "productCode": "P001"
+  },
+  "stock": 5,
+  "minStock": 1
+}
+
+Otro:
+{
+  "id": {
+    "inventoryCode": "INV001",
+    "productCode": "P002"
+  },
+  "stock": 10,
+  "minStock": 2
+}
+
+
+
+---------------  MÉTODO DEL ESCÁNER (RECOMENDADO) ---------------
+
+[POST] /api/inventory-product/{inventoryCode}/scan/{productCode}/{qty}
+
+Ejemplos:
+
+POST /api/inventory-product/INV001/scan/P001/1
+POST /api/inventory-product/INV001/scan/P002/3
+
+Si el producto no existe → devuelve error:
+POST /api/inventory-product/INV001/scan/NOEXISTE/1
+
+
+---------------  UPDATE ITEM DEL INVENTARIO ---------------
+
+[PUT] /api/inventory-product
+JSON:
+{
+  "id": {
+    "inventoryCode": "INV001",
+    "productCode": "P001"
+  },
+  "stock": 25,
+  "minStock": 5
+}
+
+
+
+---------------  DELETE ITEM DEL INVENTARIO ---------------
+
+[DELETE] /api/inventory-product/{inventoryCode}/{productCode}
+
+Ejemplo:
+DELETE /api/inventory-product/INV001/P001
+
+
+
+----------------------------------------------------
+-----------   EJEMPLO RESPUESTA /inventory/full    --
+----------------------------------------------------
+
+GET /inventory/INV001/full
+
+Respuesta JSON:
+{
+  "inventory": {
+     "code": "INV001",
+     "name": "Inventario Central",
+     "status": "ACTIVE",
+     "userName": "juan"
+  },
+  "totalItems": 2,
+  "totalStock": 13,
+  "products": [
+      {
+        "code": "P001",
+        "name": "Martillo",
+        "stock": 5,
+        "minStock": 1
+      },
+      {
+        "code": "P002",
+        "name": "Destornillador Philips",
+        "stock": 8,
+        "minStock": 2
+      }
+  ]
+}
+
+
+====================================================
+=         FIN DEL ARCHIVO DE ENDPOINTS Y TEST      =
+====================================================
