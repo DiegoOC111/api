@@ -10,19 +10,35 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.ferreteriahogar.api.model.InventoryProduct;
 import com.ferreteriahogar.api.model.InventoryProductId;
 import com.ferreteriahogar.api.service.InventoryProductService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
-@RequestMapping("/api/inventory-product")
+@RequestMapping("/inventory-product")
+@Tag(name = "Inventory Product", description = "Gestión de productos dentro de un inventario")
 public class InventoryProductController {
 
     @Autowired
     private InventoryProductService inventoryProductService;
 
-
-
+    // ----------------------- GET LIST BY INVENTORY -----------------------
+    @Operation(
+            summary = "Obtener todos los productos de un inventario",
+            description = "Devuelve la lista de productos asociados al inventario indicado.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Lista obtenida exitosamente"),
+                    @ApiResponse(responseCode = "400", description = "Código de inventario inválido", content = @Content)
+            }
+    )
     @GetMapping("/inventory/{inventoryCode}")
     public ResponseEntity<?> getItemsByInventory(@PathVariable String inventoryCode) {
         try {
@@ -32,6 +48,15 @@ public class InventoryProductController {
         }
     }
 
+    // ----------------------- GET ONE -----------------------
+    @Operation(
+            summary = "Obtener un item del inventario",
+            description = "Devuelve un InventoryProduct según su inventario y código de producto.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Item encontrado"),
+                    @ApiResponse(responseCode = "400", description = "Parámetros inválidos", content = @Content)
+            }
+    )
     @GetMapping("/{inventoryCode}/{productCode}")
     public ResponseEntity<?> getOne(
             @PathVariable String inventoryCode,
@@ -45,6 +70,29 @@ public class InventoryProductController {
         }
     }
 
+    // ----------------------- CREATE -----------------------
+    @Operation(
+            summary = "Crear relación inventario-producto",
+            description = "Agrega un producto al inventario especificado.",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    required = true,
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = InventoryProduct.class),
+                            examples = @ExampleObject(
+                                    value = "{\n" +
+                                            "  \"inventoryCode\": \"INV001\",\n" +
+                                            "  \"productCode\": \"PROD100\",\n" +
+                                            "  \"qty\": 5\n" +
+                                            "}"
+                            )
+                    )
+            ),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Item creado con éxito"),
+                    @ApiResponse(responseCode = "400", description = "Datos inválidos", content = @Content)
+            }
+    )
     @PostMapping
     public ResponseEntity<?> create(@RequestBody InventoryProduct ip) {
         try {
@@ -54,6 +102,15 @@ public class InventoryProductController {
         }
     }
 
+    // ----------------------- SCAN ADD -----------------------
+    @Operation(
+            summary = "Agregar producto mediante escaneo",
+            description = "Incrementa la cantidad de un producto dentro del inventario según cantidad escaneada.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Cantidad actualizada correctamente"),
+                    @ApiResponse(responseCode = "400", description = "Parámetros inválidos", content = @Content)
+            }
+    )
     @PostMapping("/{inventoryCode}/scan/{productCode}/{qty}")
     public ResponseEntity<?> addByScan(
             @PathVariable String inventoryCode,
@@ -62,14 +119,34 @@ public class InventoryProductController {
 
         try {
             return ResponseEntity.ok(
-                inventoryProductService.addProductByScan(inventoryCode, productCode, qty)
+                    inventoryProductService.addProductByScan(inventoryCode, productCode, qty)
             );
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-
+    // ----------------------- UPDATE -----------------------
+    @Operation(
+            summary = "Actualizar un item del inventario",
+            description = "Modifica la cantidad o la información relacionada a un producto del inventario.",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    required = true,
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = "{\n" +
+                                            "  \"inventoryCode\": \"INV001\",\n" +
+                                            "  \"productCode\": \"PROD100\",\n" +
+                                            "  \"qty\": 20\n" +
+                                            "}"
+                            )
+                    )
+            ),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Item actualizado correctamente"),
+                    @ApiResponse(responseCode = "400", description = "Datos inválidos", content = @Content)
+            }
+    )
     @PutMapping
     public ResponseEntity<?> update(@RequestBody InventoryProduct ip) {
         try {
@@ -79,7 +156,15 @@ public class InventoryProductController {
         }
     }
 
-
+    // ----------------------- DELETE -----------------------
+    @Operation(
+            summary = "Eliminar un item del inventario",
+            description = "Elimina la relación entre un inventario y un producto.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Item eliminado correctamente"),
+                    @ApiResponse(responseCode = "400", description = "Parámetros inválidos", content = @Content)
+            }
+    )
     @DeleteMapping("/{inventoryCode}/{productCode}")
     public ResponseEntity<?> delete(
             @PathVariable String inventoryCode,

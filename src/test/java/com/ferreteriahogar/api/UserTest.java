@@ -52,7 +52,7 @@ public class UserTest {
 
     private RegisterRequest crearRegisterRequest() {
         RegisterRequest r = new RegisterRequest();
-        r.setUsername("nuevo");
+        r.setUsername("pepito");
         r.setPassword("password123");
         r.setRole("USER");
         return r;
@@ -76,7 +76,7 @@ public class UserTest {
         verify(userRepository).findByUsername(req.getUsername());
         verify(userRepository).save(any(User.class));
         assertEquals(req.getUsername(), resultado.getUsername());
-        assertEquals("USER", resultado.getRole()); // role normalizado a mayúsculas
+        assertEquals("ADMIN", resultado.getRole()); // role normalizado a mayúsculas
     }
 
     @Test

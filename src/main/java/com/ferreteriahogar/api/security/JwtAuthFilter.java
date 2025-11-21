@@ -17,13 +17,13 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter{
-    
+
     @Autowired
     private JwtService jwtService;
 
     @Autowired
     private CustomUserDetailsService userDetailsService;
-    
+
 
     @Override
     protected void doFilterInternal(
@@ -41,7 +41,7 @@ public class JwtAuthFilter extends OncePerRequestFilter{
 
         String username = null;
         String token = null;
-        
+
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);

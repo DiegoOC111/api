@@ -27,11 +27,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+
+@WithMockUser(username = "carlos", roles = {"ADMIN"})
+@DisplayName("Controller - POST /inventory")
 public class InventoryTest {
 
     @MockitoBean
@@ -125,7 +129,7 @@ public class InventoryTest {
 
         assertEquals("INV001", full.getInventory().getCode());
         assertEquals("ACTIVE", full.getInventory().getStatus());
-        assertEquals("admin", full.getInventory().getUserName());
+        assertEquals("carlos", full.getInventory().getUserName());
     }
     @Test
     @DisplayName("Service - Guardar inventario exitosamente")
