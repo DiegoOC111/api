@@ -30,10 +30,16 @@ jobs:
       run: mvn -B package -DskipTests --file pom.xml
     - name: Run application
       run: |
-        sudo kill -9 $(sudo lsof -t -i:8081) || true
+        echo "Cerrando proceso en 8081 si existe..."
+        sudo lsof -t -i:8081 | xargs -r sudo kill -9
+    
+        echo "Buscando jar generado..."
         JAR_FILE=$(ls target/*.jar | head -n 1)
+    
         echo "Jar generado: $JAR_FILE"
-        sudo java -jar "$JAR_FILE
+    
+        echo "Ejecutando aplicación..."
+        nohup sudo java -jar "$JAR_FILE" > app.log 2>&1 &
 
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
     - name: Update dependency graph
