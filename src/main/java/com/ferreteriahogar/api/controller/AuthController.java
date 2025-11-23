@@ -129,24 +129,4 @@ public class AuthController {
     // ============================================
     // BOOTSTRAP ADMIN
     // ============================================
-    @Operation(
-            summary = "Crear un administrador inicial",
-            description = "Crea un usuario ADMIN por defecto en la base de datos. Se recomienda usar solo una vez."
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Administrador creado exitosamente"),
-            @ApiResponse(responseCode = "500", description = "Error interno al crear el administrador")
-    })
-    @PostMapping("/bootstrap-admin")
-    public ResponseEntity<?> bootstrapAdmin() {
-
-        User admin = new User();
-        admin.setUsername("Seba");
-        admin.setPassword(encoder.encode("abc123"));
-        admin.setRole("ADMIN");
-
-        userRepository.save(admin);
-
-        return ResponseEntity.ok("Admin creado");
-    }
 }
