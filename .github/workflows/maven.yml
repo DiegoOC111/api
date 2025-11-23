@@ -28,8 +28,12 @@ jobs:
         cache: maven
     - name: Build with Maven (skip tests)
       run: mvn -B package -DskipTests --file pom.xml
-    - name: Build with Maven (skip tests)
-      run: sudo kill -9 $(sudo lsof -t -i:8081) & sudo java -jar /home/ubuntu/actions-runner/_work/api/api/target
+    - name: Run application
+      run: |
+        sudo kill -9 $(sudo lsof -t -i:8081) || true
+        JAR_FILE=$(ls target/*.jar | head -n 1)
+        echo "Jar generado: $JAR_FILE"
+        sudo java -jar "$JAR_FILE
 
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
     - name: Update dependency graph
