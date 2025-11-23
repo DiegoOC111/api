@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,6 +44,7 @@ public class ProductController {
                             array = @ArraySchema(schema = @Schema(implementation = Product.class))))
     })
     @GetMapping
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public ResponseEntity<?> getAll() {
         return ResponseEntity.ok(productService.getAll());
     }
@@ -62,6 +64,7 @@ public class ProductController {
                     content = @Content)
     })
     @GetMapping("/{code}")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public ResponseEntity<?> getById(@PathVariable String code) {
         try {
             return ResponseEntity.ok(productService.getById(code));
@@ -84,6 +87,8 @@ public class ProductController {
             @ApiResponse(responseCode = "400", description = "Datos inválidos para crear el producto")
     })
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
+
     public ResponseEntity<?> create(@RequestBody Product p) {
         try {
             return ResponseEntity.ok(productService.create(p));
@@ -106,6 +111,8 @@ public class ProductController {
             @ApiResponse(responseCode = "400", description = "Datos inválidos para actualizar")
     })
     @PutMapping
+    @PreAuthorize("hasRole('ADMIN')")
+
     public ResponseEntity<?> update(@RequestBody Product p) {
         try {
             return ResponseEntity.ok(productService.update(p));
@@ -126,6 +133,8 @@ public class ProductController {
             @ApiResponse(responseCode = "400", description = "Producto no encontrado o error al eliminar")
     })
     @DeleteMapping("/{code}")
+    @PreAuthorize("hasRole('ADMIN')")
+
     public ResponseEntity<?> delete(@PathVariable String code) {
         try {
             productService.delete(code);

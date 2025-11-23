@@ -2,6 +2,7 @@ package com.ferreteriahogar.api.controller.privates;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,6 +41,8 @@ public class InventoryProductController {
             }
     )
     @GetMapping("/inventory/{inventoryCode}")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+
     public ResponseEntity<?> getItemsByInventory(@PathVariable String inventoryCode) {
         try {
             return ResponseEntity.ok(inventoryProductService.getByInventory(inventoryCode));
@@ -58,6 +61,8 @@ public class InventoryProductController {
             }
     )
     @GetMapping("/{inventoryCode}/{productCode}")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+
     public ResponseEntity<?> getOne(
             @PathVariable String inventoryCode,
             @PathVariable String productCode) {
@@ -94,6 +99,8 @@ public class InventoryProductController {
             }
     )
     @PostMapping
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+
     public ResponseEntity<?> create(@RequestBody InventoryProduct ip) {
         try {
             return ResponseEntity.ok(inventoryProductService.save(ip));
@@ -112,6 +119,8 @@ public class InventoryProductController {
             }
     )
     @PostMapping("/{inventoryCode}/scan/{productCode}/{qty}")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+
     public ResponseEntity<?> addByScan(
             @PathVariable String inventoryCode,
             @PathVariable String productCode,
@@ -148,6 +157,8 @@ public class InventoryProductController {
             }
     )
     @PutMapping
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+
     public ResponseEntity<?> update(@RequestBody InventoryProduct ip) {
         try {
             return ResponseEntity.ok(inventoryProductService.update(ip));
@@ -166,6 +177,8 @@ public class InventoryProductController {
             }
     )
     @DeleteMapping("/{inventoryCode}/{productCode}")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+
     public ResponseEntity<?> delete(
             @PathVariable String inventoryCode,
             @PathVariable String productCode) {

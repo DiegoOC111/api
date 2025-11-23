@@ -3,6 +3,7 @@ package com.ferreteriahogar.api.controller.privates;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,6 +41,8 @@ public class InventoryController {
                             array = @ArraySchema(schema = @Schema(implementation = Inventory.class))))
     })
     @GetMapping
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+
     public ResponseEntity<?> getAll() {
         return ResponseEntity.ok(inventoryService.getAllInventory());
     }
@@ -57,6 +60,8 @@ public class InventoryController {
                     content = @Content)
     })
     @GetMapping("/{code}")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+
     public ResponseEntity<?> getById(@PathVariable String code) {
         try {
             return ResponseEntity.ok(inventoryService.getInventoryById(code));
@@ -76,6 +81,8 @@ public class InventoryController {
                     content = @Content)
     })
     @GetMapping("/{inventoryCode}/full")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+
     public ResponseEntity<?> getFullInventory(@PathVariable String inventoryCode) {
         try {
             return ResponseEntity.ok(inventoryService.getInventoryFull(inventoryCode));
@@ -97,6 +104,8 @@ public class InventoryController {
                     content = @Content)
     })
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
+
     public ResponseEntity<?> create(@RequestBody Inventory inventory) {
         try {
             Inventory saved = inventoryService.saveInventory(inventory);
@@ -119,6 +128,8 @@ public class InventoryController {
                     content = @Content)
     })
     @PutMapping
+    @PreAuthorize("hasRole('ADMIN')")
+
     public ResponseEntity<?> update(@RequestBody Inventory inventory) {
         try {
             Inventory updated = inventoryService.updateInventory(inventory);
@@ -139,6 +150,8 @@ public class InventoryController {
                     content = @Content)
     })
     @DeleteMapping("/{code}")
+    @PreAuthorize("hasRole('ADMIN')")
+
     public ResponseEntity<?> delete(@PathVariable String code) {
         try {
             inventoryService.deleteInventory(code);

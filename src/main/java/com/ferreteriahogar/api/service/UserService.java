@@ -29,7 +29,7 @@ public class UserService {
         if (user == null) return null;
         if (!encoder.matches(password, user.getPassword())) return null;
 
-        return jwtService.generateToken(username);
+        return jwtService.generateToken(user);
     }
 
     public String getRole(String username){
