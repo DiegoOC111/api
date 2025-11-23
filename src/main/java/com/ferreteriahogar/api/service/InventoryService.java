@@ -99,7 +99,7 @@ public class InventoryService {
             throw new IllegalArgumentException("El nombre del inventario es obligatorio.");
         }
 
-        if (i.status == null || i.status.trim().isEmpty()) {
+        if (i.status == null || i.status.trim().isEmpty() || !"ACTIVE".equals(i.status) && !"INACTIVE".equals(i.status)) {
             throw new IllegalArgumentException("El estado del inventario es obligatorio.");
         }
 
