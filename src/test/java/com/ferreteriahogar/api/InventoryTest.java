@@ -1,6 +1,7 @@
 package com.ferreteriahogar.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ferreteriahogar.api.controller.dto.Postinventory;
 import com.ferreteriahogar.api.model.Inventory;
 import com.ferreteriahogar.api.model.InventoryProduct;
 import com.ferreteriahogar.api.model.Product;
@@ -61,6 +62,7 @@ public class InventoryTest {
 
     private User dummyUser() {
         User u = new User();
+        u.setId(1L);
         u.setUsername("carlos");
         return u;
     }
@@ -73,7 +75,19 @@ public class InventoryTest {
         inv.setUser(dummyUser());
         return inv;
     }
+    private Postinventory dummyPostinventory() {
+        Postinventory p = new Postinventory();
+        p.code = "INV001";
+        p.name = "Bodega Central";
+        p.status = "ACTIVE";
 
+        User u = new User();
+        u.setId(1L); // ✅ Asignar un id válido
+        u.setUsername("carlos");
+
+        p.id = u.getId(); // ahora será 1L
+        return p;
+    }
     private InventoryProduct dummyInvProd(String code, int stock, int minStock) {
         Product p = new Product();
         p.setCode(code);
@@ -134,17 +148,18 @@ public class InventoryTest {
     @Test
     @DisplayName("Service - Guardar inventario exitosamente")
     void testSaveInventory() {
-        Inventory inv = dummyInventory();
+        Postinventory inv = dummyPostinventory();
 
-        when(userRepository.findByUsername("carlos")).thenReturn(dummyUser());
-        when(inventoryRepository.save(inv)).thenReturn(inv);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(dummyUser()));
+        when(inventoryRepository.save(any(Inventory.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         Inventory saved = inventoryService.saveInventory(inv);
 
         assertEquals("Bodega Central", saved.getName());
-        verify(inventoryRepository).save(inv);
+        assertEquals("ACTIVE", saved.getStatus());
+        assertEquals(1L, saved.getUser().getId());
+        verify(inventoryRepository, times(1)).save(any(Inventory.class));
     }
-
     @Test
     @DisplayName("Service - Eliminar inventario existente")
     void testDeleteInventory() {
@@ -184,18 +199,27 @@ public class InventoryTest {
     @Test
     @DisplayName("Controller - POST /inventory")
     void testCreateInventoryController() throws Exception {
-        Inventory inv = dummyInventory();
+        Postinventory postInv = dummyPostinventory(); // Usa Postinventory
+        Inventory savedInv = new Inventory();
+        savedInv.setCode(postInv.code);
+        savedInv.setName(postInv.name);
+        savedInv.setStatus(postInv.status);
+        User user = new User();
+        user.setId(postInv.id);
+        savedInv.setUser(user);
 
-        when(userRepository.findByUsername("carlos")).thenReturn(dummyUser());
-        when(inventoryRepository.save(any(Inventory.class))).thenReturn(inv);
+        when(userRepository.findById(postInv.id)).thenReturn(Optional.of(user));
+        when(inventoryRepository.save(any(Inventory.class))).thenReturn(savedInv);
 
         mockMvc.perform(post("/inventory")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(inv)))
+                        .content(mapper.writeValueAsString(postInv)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value("INV001"));
+                .andExpect(jsonPath("$.code").value("INV001"))
+                .andExpect(jsonPath("$.name").value("Bodega Central"))
+                .andExpect(jsonPath("$.status").value("ACTIVE"))
+                .andExpect(jsonPath("$.user.id").value(1));
     }
-
     @Test
     @DisplayName("Controller - DELETE /inventory/{code}")
     void testDeleteInventoryController() throws Exception {

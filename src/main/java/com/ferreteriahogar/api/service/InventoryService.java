@@ -1,7 +1,9 @@
 package com.ferreteriahogar.api.service;
 
 import java.util.List;
+import java.util.Optional;
 
+import com.ferreteriahogar.api.controller.dto.Postinventory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -70,14 +72,14 @@ public class InventoryService {
         );
     }
 
-    public Inventory saveInventory(Inventory i){
-        validateInventory(i);
-        return inventoryRepository.save(i);
+    public Inventory saveInventory(Postinventory i){
+        ;
+        return inventoryRepository.save(validateInventory(i));
     }
 
-    public Inventory updateInventory(Inventory i){
-        validateInventoryForUpdate(i);
-        return inventoryRepository.save(i);
+    public Inventory updateInventory(Postinventory i){
+        ;
+        return inventoryRepository.save(validateInventoryForUpdate(i));
     }
 
     public void deleteInventory(String code){
@@ -88,35 +90,41 @@ public class InventoryService {
         inventoryRepository.deleteById(code);
     }
 
-    private void validateInventory(Inventory i){
+    private Inventory validateInventory(Postinventory i){
         if (i == null){
             throw new IllegalArgumentException("El inventario no puede ser nulo.");
         }
 
-        if (i.getName() == null || i.getName().trim().isEmpty()) {
+        if (i.name == null || i.name.trim().isEmpty()) {
             throw new IllegalArgumentException("El nombre del inventario es obligatorio.");
         }
 
-        if (i.getStatus() == null || i.getStatus().trim().isEmpty()) {
+        if (i.status == null || i.status.trim().isEmpty()) {
             throw new IllegalArgumentException("El estado del inventario es obligatorio.");
         }
 
-        if (i.getUser() == null || i.getUser().getUsername() == null) {
+        if (i.id == null) {
             throw new IllegalArgumentException("El inventario debe tener un usuario asignado.");
         }
 
-        User user = userRepository.findByUsername(i.getUser().getUsername());
+        Optional<User> user = userRepository.findById(i.id);
         if (user == null){
             throw new IllegalArgumentException("El usuario asignado no existe.");
         }
+        User u = user.get();
+        Inventory Auxinv = new Inventory();
+        Auxinv.setCode(i.code);
+        Auxinv.setName(i.name);
+        Auxinv.setStatus(i.status);
+        Auxinv.setUser(u);
+        return Auxinv;
 
-        i.setUser(user);
     }
 
-    private void validateInventoryForUpdate(Inventory i){
-        if (i.getCode() == null) {
+    private Inventory validateInventoryForUpdate(Postinventory i){
+        if (i.code == null) {
             throw new IllegalArgumentException("El ID del inventario es obligatorio para actualizar.");
         }
-        validateInventory(i);
+        return validateInventory(i);
     }
 }

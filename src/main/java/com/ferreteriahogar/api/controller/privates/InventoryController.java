@@ -1,5 +1,6 @@
 package com.ferreteriahogar.api.controller.privates;
 
+import com.ferreteriahogar.api.controller.dto.Postinventory;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -106,7 +107,7 @@ public class InventoryController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
 
-    public ResponseEntity<?> create(@RequestBody Inventory inventory) {
+    public ResponseEntity<?> create(@RequestBody Postinventory inventory) {
         try {
             Inventory saved = inventoryService.saveInventory(inventory);
             return ResponseEntity.ok(saved);
@@ -130,7 +131,7 @@ public class InventoryController {
     @PutMapping
     @PreAuthorize("hasRole('ADMIN')")
 
-    public ResponseEntity<?> update(@RequestBody Inventory inventory) {
+    public ResponseEntity<?> update(@RequestBody Postinventory inventory) {
         try {
             Inventory updated = inventoryService.updateInventory(inventory);
             return ResponseEntity.ok(updated);
