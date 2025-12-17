@@ -99,7 +99,7 @@ public class UserTest {
         when(userRepository.findByUsername("juan")).thenReturn(existing);
         when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArgument(0));
 
-        User updated = userService.updateUser("juan", "newpass", "ADMIN");
+        User updated = userService.updateUser("juan", "newpass", "ADMIN","XD");
 
         verify(userRepository).findByUsername("juan");
         verify(userRepository).save(any(User.class));

@@ -77,9 +77,42 @@ public class InventoryService {
         return inventoryRepository.save(validateInventory(i));
     }
 
-    public Inventory updateInventory(Postinventory i){
-        ;
-        return inventoryRepository.save(validateInventoryForUpdate(i));
+    public Inventory updateInventory(Postinventory req) {
+        // 1. VALIDACIÓN PREVIA DE DATOS BÁSICOS
+        if (req.code == null) {
+            throw new IllegalArgumentException("El ID del inventario es obligatorio.");
+        }
+
+        // 2. BUSCAR EL INVENTARIO EXISTENTE (Esto es lo que te faltaba)
+        Inventory existingInventory = inventoryRepository.findById(req.code)
+                .orElseThrow(() -> new IllegalArgumentException("No se encontró el inventario con ID: " + req.code));
+
+        // 3. ACTUALIZAR NOMBRE
+        if (req.name != null && !req.name.trim().isEmpty()) {
+            existingInventory.setName(req.name);
+        } else {
+            throw new IllegalArgumentException("El nombre es obligatorio");
+        }
+
+        // 4. ACTUALIZAR ESTADO
+        if (req.status != null && (req.status.equals("ACTIVE") || req.status.equals("INACTIVE"))) {
+            existingInventory.setStatus(req.status);
+        } else {
+            throw new IllegalArgumentException("Estado inválido o vacío");
+        }
+
+        // 5. ACTUALIZAR USUARIO (Solo si cambia)
+        // Asumiendo que req.id es el ID del usuario
+        if (req.id != null) {
+            // Validamos que el usuario exista
+            User user = userRepository.findById(req.id)
+                    .orElseThrow(() -> new IllegalArgumentException("El usuario asignado no existe."));
+
+            existingInventory.setUser(user);
+        }
+
+        // 6. GUARDAR EL OBJETO QUE RECUPERAMOS AL INICIO
+        return inventoryRepository.save(existingInventory);
     }
 
     public void deleteInventory(String code){

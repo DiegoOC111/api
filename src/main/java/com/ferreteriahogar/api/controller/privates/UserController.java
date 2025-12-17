@@ -47,7 +47,7 @@ public class UserController {
             @ApiResponse(responseCode = "403", description = "Acceso denegado", content = @Content)
     })
     @GetMapping("/me")
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    @PreAuthorize("hasAnyRole('USER','ADMIN', 'UADMIN', 'IADMIN' )")
     public ResponseEntity<?> getProfile(Authentication auth) {
         User user = userService.getByUsername(auth.getName());
         return ResponseEntity.ok(user);
@@ -66,7 +66,8 @@ public class UserController {
             @ApiResponse(responseCode = "403", description = "Acceso denegado", content = @Content)
     })
     @GetMapping("/all")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('UADMIN','ADMIN')")
+
     public ResponseEntity<?> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
@@ -83,7 +84,8 @@ public class UserController {
             @ApiResponse(responseCode = "403", description = "Acceso denegado", content = @Content)
     })
     @PostMapping("/create-user")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('UADMIN','ADMIN')")
+
     public ResponseEntity<?> createUser(@RequestBody RegisterRequest req) {
         try {
             User u = userService.createUser(
@@ -111,13 +113,13 @@ public class UserController {
             @ApiResponse(responseCode = "403", description = "Acceso denegado", content = @Content)
     })
     @PutMapping("/{username}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('UADMIN','ADMIN')")
     public ResponseEntity<?> updateUser(
             @PathVariable String username,
             @RequestBody RegisterRequest req
     ) {
         try {
-            User updated = userService.updateUser(username, req.getPassword(), req.getRole());
+            User updated = userService.updateUser(username, req.getPassword(), req.getRole(),req.getUsername());
             return ResponseEntity.ok(updated);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -136,7 +138,8 @@ public class UserController {
             @ApiResponse(responseCode = "403", description = "Acceso denegado", content = @Content)
     })
     @DeleteMapping("/{username}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('UADMIN','ADMIN')")
+
     public ResponseEntity<?> deleteUser(@PathVariable String username) {
         try {
             userService.deleteUser(username);

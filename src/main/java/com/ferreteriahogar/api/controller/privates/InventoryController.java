@@ -82,7 +82,7 @@ public class InventoryController {
                     content = @Content)
     })
     @GetMapping("/{inventoryCode}/full")
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    @PreAuthorize("hasAnyRole('USER','ADMIN','IADMIN')")
 
     public ResponseEntity<?> getFullInventory(@PathVariable String inventoryCode) {
         try {
@@ -105,7 +105,8 @@ public class InventoryController {
                     content = @Content)
     })
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('IADMIN','ADMIN')")
+
 
     public ResponseEntity<?> create(@RequestBody Postinventory inventory) {
         try {
@@ -129,7 +130,8 @@ public class InventoryController {
                     content = @Content)
     })
     @PutMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('IADMIN','ADMIN')")
+
 
     public ResponseEntity<?> update(@RequestBody Postinventory inventory) {
         try {
@@ -151,7 +153,8 @@ public class InventoryController {
                     content = @Content)
     })
     @DeleteMapping("/{code}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('IADMIN','ADMIN')")
+
 
     public ResponseEntity<?> delete(@PathVariable String code) {
         try {

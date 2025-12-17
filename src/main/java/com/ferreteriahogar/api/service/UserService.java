@@ -53,24 +53,28 @@ public class UserService {
         userRepository.delete(user);
     }
 
-    public User updateUser(String username, String password, String role) {
+    public User updateUser(String username, String password, String role,String NewUsername) {
 
         User existing = getByUsername(username);
 
         if (username != null && !username.trim().isEmpty()) {
-            if (!existing.getUsername().equals(username)) {
-                checkUsernameAvailable(username);
+            if (!existing.getUsername().equals(NewUsername)) {
+                checkUsernameAvailable(NewUsername);
+                existing.setUsername(NewUsername);
+
+            }else{
+                existing.setUsername(username);
+
             }
-            existing.setUsername(username);
         }
 
         if (password != null && !password.trim().isEmpty()) {
             existing.setPassword(encoder.encode(password));
         }
-
+        List<String> rolesValidos = List.of("USER", "ADMIN", "UADMIN", "IADMIN");
         if (role != null && !role.trim().isEmpty()) {
             String r = role.toUpperCase();
-            if (!r.equals("USER") && !r.equals("ADMIN")) {
+            if (!rolesValidos.contains(r)) {
                 throw new IllegalArgumentException("Rol inválido. Debe ser USER o ADMIN");
             }
             existing.setRole(r);
@@ -103,8 +107,8 @@ public class UserService {
             throw new IllegalArgumentException("El rol es obligatorio.");
 
         String normalizedRole = role.toUpperCase();
-        if (!normalizedRole.equals("USER") && !normalizedRole.equals("ADMIN"))
-            throw new IllegalArgumentException("El rol debe ser 'USER' o 'ADMIN'.");
+        if (!normalizedRole.equals("USER") && !normalizedRole.equals("ADMIN") && !normalizedRole.equals("UADMIN") && !normalizedRole.equals("IADMIN"))
+            throw new IllegalArgumentException("El rol debe ser 'USER' o 'ADMIN' O IADMIN O UADMIN.");
     }
 
     private void checkUsernameAvailable(String username) {

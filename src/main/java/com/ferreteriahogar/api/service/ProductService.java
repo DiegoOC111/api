@@ -30,16 +30,16 @@ public class ProductService {
         return productRepository.save(p);
     }
 
-    public Product update(Product p) {
+    public Product update(Product p,String Old) {
 
-        if (p.getCode() == null || p.getCode().isBlank()) {
+        if (Old == null || Old.isBlank()) {
             throw new IllegalArgumentException("El código es obligatorio para actualizar.");
         }
 
-        Product existing = getById(p.getCode());
+        Product existing = getById(Old);
 
         if (p.getName() != null && !p.getName().isBlank()) {
-            existing.setName(p.getName());
+            existing.setName(Old);
         }
 
         if (p.getDescription() != null) {

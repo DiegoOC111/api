@@ -113,9 +113,9 @@ public class ProductController {
     @PutMapping
     @PreAuthorize("hasRole('ADMIN')")
 
-    public ResponseEntity<?> update(@RequestBody Product p) {
+    public ResponseEntity<?> update(@RequestBody Product p, @PathVariable String OldNAme) {
         try {
-            return ResponseEntity.ok(productService.update(p));
+            return ResponseEntity.ok(productService.update(p, OldNAme));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
