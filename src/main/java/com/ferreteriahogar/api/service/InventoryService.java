@@ -124,6 +124,7 @@ public class InventoryService {
     }
 
     private Inventory validateInventory(Postinventory i){
+        //:p
         if (i == null){
             throw new IllegalArgumentException("El inventario no puede ser nulo.");
         }

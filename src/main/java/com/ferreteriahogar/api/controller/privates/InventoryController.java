@@ -42,7 +42,7 @@ public class InventoryController {
                             array = @ArraySchema(schema = @Schema(implementation = Inventory.class))))
     })
     @GetMapping
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    @PreAuthorize("hasAnyRole('USER','ADMIN','IADMIN')")
 
     public ResponseEntity<?> getAll() {
         return ResponseEntity.ok(inventoryService.getAllInventory());
@@ -61,7 +61,7 @@ public class InventoryController {
                     content = @Content)
     })
     @GetMapping("/{code}")
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    @PreAuthorize("hasAnyRole('USER','ADMIN','IADMIN')")
 
     public ResponseEntity<?> getById(@PathVariable String code) {
         try {
